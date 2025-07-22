@@ -1,6 +1,6 @@
 resource "aws_security_group" "strapi_sg" {
   name        = "aryak-strapi_sg"
-  description = "Allow HTTP and Strapi port"
+  description = "Allow HTTP, Strapi port and SSH"
 
   ingress {
     description = "Allow Strapi port"
@@ -10,7 +10,7 @@ resource "aws_security_group" "strapi_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-   ingress {
+  ingress {
     description = "SSH access"
     from_port   = 22
     to_port     = 22
@@ -35,15 +35,24 @@ resource "aws_security_group" "strapi_sg" {
   }
 }
 
+data "template_file" "user_data" {
+  template = file("${path.module}/user_data.sh")
+
+  vars = {
+    image_tag = var.image_tag
+  }
+}
+
 resource "aws_instance" "strapi_ec2" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
-  key_name               = var.key_name
-  security_groups        = [aws_security_group.strapi_sg.name]
-  user_data              = file("user_data.sh")
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  key_name                   = var.key_name
+  vpc_security_group_ids     = [aws_security_group.strapi_sg.id]
   associate_public_ip_address = true
+  user_data                   = data.template_file.user_data.rendered
 
   tags = {
     Name = "StrapiAppServer"
   }
 }
+
