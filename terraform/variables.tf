@@ -7,7 +7,7 @@ variable "region" {
 variable "ami_id" {
   description = "AMI ID for EC2 (Ubuntu 22.04)"
   type        = string
-  default     = "ami-0d1b5a8c13042c939"  # Update based on your region
+  default     = "ami-0d1b5a8c13042c939"  
 }
 
 variable "instance_type" {
@@ -19,5 +19,10 @@ variable "instance_type" {
 variable "key_name" {
   description = "AWS EC2 KeyPair name"
   type        = string
-  default     = "aryak_login"   # Update with your actual key pair
+  default     = "aryak_login"  
+}
+variable "image_tag" {
+  description = "Docker image tag to deploy"
+  type        = string
+  default     = "latest"
 }
